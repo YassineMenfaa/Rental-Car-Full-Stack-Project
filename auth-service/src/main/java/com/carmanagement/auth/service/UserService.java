@@ -19,8 +19,8 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public String login(String username, String password) {
-        User user = userRepository.findByUsername(username)
+    public String login(String email, String password) {
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
@@ -28,13 +28,13 @@ public class UserService {
         }
 
         // Génération du JWT
-        return JwtUtil.generateToken(user.getUsername(), user.getRole());
+        return JwtUtil.generateToken(user.getEmail(), user.getRole());
     }
 
     // Méthode pour enregistrer un utilisateur
-    public User register(String username, String password) {
+    public User register(String email, String password) {
         User user = new User();
-        user.setUsername(username);
+        user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password)); // hashage du mot de passe
         user.setRole("USER"); // rôle par défaut
         return userRepository.save(user);
@@ -44,8 +44,8 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    // Méthode pour chercher un utilisateur par username
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username).orElse(null);
+    // Méthode pour chercher un utilisateur par email
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
     }
 }

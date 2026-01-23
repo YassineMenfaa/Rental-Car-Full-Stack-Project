@@ -32,16 +32,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         try {
             String token = authHeader.substring(7);
-            String username = JwtUtil.extractUsername(token);
+            String email = JwtUtil.extractEmail(token);
             String role = JwtUtil.extractRole(token);
 
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 if (!JwtUtil.isTokenExpired(token)) {
                     List<SimpleGrantedAuthority> authorities = List.of(
                             new SimpleGrantedAuthority("ROLE_" + role));
 
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            username, null, authorities);
+                            email, null, authorities);
 
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }

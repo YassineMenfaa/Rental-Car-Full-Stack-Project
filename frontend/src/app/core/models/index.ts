@@ -1,17 +1,17 @@
 // User related types
 export interface User {
     id?: number;
-    username: string;
+    email: string;
     role: string;
 }
 
 export interface LoginRequest {
-    username: string;
+    email: string;
     password: string;
 }
 
 export interface RegisterRequest {
-    username: string;
+    email: string;
     password: string;
 }
 
@@ -32,6 +32,10 @@ export interface Car {
     rentalCount?: number;
     imageUrl?: string;
     description?: string;
+    fuelType?: 'Gasoline' | 'Electric' | 'Diesel' | 'Hybrid';
+    transmission?: 'Manual' | 'Automatic';
+    seats?: number;
+    category?: 'Economy' | 'Compact' | 'Midsize' | 'SUV' | 'Luxury' | 'Sports';
 }
 
 export interface CarSearchParams {

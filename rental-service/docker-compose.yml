@@ -7,7 +7,7 @@ services:
     container_name: postgres-auth
     environment:
       POSTGRES_DB: auth_db
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: root
       POSTGRES_USER: postgres
     ports:
       - "5432:5432"
@@ -16,7 +16,7 @@ services:
     networks:
       - car-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -27,7 +27,7 @@ services:
     container_name: postgres-car
     environment:
       POSTGRES_DB: car_db
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: root
       POSTGRES_USER: postgres
     ports:
       - "5433:5432"
@@ -36,7 +36,7 @@ services:
     networks:
       - car-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -47,7 +47,7 @@ services:
     container_name: postgres-rental
     environment:
       POSTGRES_DB: rental_db
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: root
       POSTGRES_USER: postgres
     ports:
       - "5434:5432"
@@ -56,7 +56,7 @@ services:
     networks:
       - car-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
       timeout: 5s
       retries: 5

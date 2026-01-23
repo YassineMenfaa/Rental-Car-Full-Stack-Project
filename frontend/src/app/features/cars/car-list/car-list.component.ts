@@ -60,6 +60,71 @@ import { AuthService } from '../../../core/services';
               </select>
             </div>
 
+            <div class="filter-group">
+              <label>Budget Range</label>
+              <div class="budget-inputs">
+                <input 
+                  type="number" 
+                  [(ngModel)]="minPrice"
+                  placeholder="Min $/day"
+                  (input)="onSearch()"
+                  min="0"
+                />
+                <span class="budget-separator">to</span>
+                <input 
+                  type="number" 
+                  [(ngModel)]="maxPrice"
+                  placeholder="Max $/day"
+                  (input)="onSearch()"
+                  min="0"
+                />
+              </div>
+            </div>
+
+            <div class="filter-group">
+              <label>Fuel Type</label>
+              <select [(ngModel)]="selectedFuelType" (change)="onSearch()">
+                <option value="">All Fuel Types</option>
+                <option value="Gasoline">Gasoline</option>
+                <option value="Electric">Electric</option>
+                <option value="Diesel">Diesel</option>
+                <option value="Hybrid">Hybrid</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label>Transmission</label>
+              <select [(ngModel)]="selectedTransmission" (change)="onSearch()">
+                <option value="">All Transmissions</option>
+                <option value="Automatic">Automatic</option>
+                <option value="Manual">Manual</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label>Category</label>
+              <select [(ngModel)]="selectedCategory" (change)="onSearch()">
+                <option value="">All Categories</option>
+                <option value="Economy">Economy</option>
+                <option value="Compact">Compact</option>
+                <option value="Midsize">Midsize</option>
+                <option value="SUV">SUV</option>
+                <option value="Luxury">Luxury</option>
+                <option value="Sports">Sports</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label>Seats</label>
+              <select [(ngModel)]="selectedSeats" (change)="onSearch()">
+                <option value="">Any Seats</option>
+                <option value="2">2 Seats</option>
+                <option value="4">4 Seats</option>
+                <option value="5">5 Seats</option>
+                <option value="7">7+ Seats</option>
+              </select>
+            </div>
+
             <div class="filter-group available-toggle-group">
               <span class="toggle-group-label">Available Only</span>
               <label class="toggle-container-vertical">
@@ -346,6 +411,33 @@ import { AuthService } from '../../../core/services';
       cursor: pointer;
     }
 
+    .budget-inputs {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .budget-inputs input {
+      flex: 1;
+      padding: 0.875rem 0.75rem;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+      width: 100%;
+    }
+
+    .budget-inputs input:focus {
+      outline: none;
+      border-color: var(--primary-500);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .budget-separator {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
     .available-toggle-group {
       padding-top: 1.5rem;
       border-top: 1px dashed var(--border);
@@ -360,36 +452,35 @@ import { AuthService } from '../../../core/services';
     }
 
     .toggle-track {
-      width: 54px;
+      width: 52px;
       height: 28px;
-      background: #1e293b; /* Dark Slate for extreme contrast */
+      background: #e2e8f0; /* Light gray when OFF */
       border-radius: 14px;
       position: relative;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: background 0.3s ease;
       flex-shrink: 0;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+      cursor: pointer;
     }
 
     .toggle-track::after {
       content: '';
       position: absolute;
-      width: 22px;
-      height: 22px;
+      width: 24px;
+      height: 24px;
       background: white;
       border-radius: 50%;
-      top: 3px;
-      left: 3px;
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+      top: 2px;
+      left: 2px;
+      transition: transform 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
 
     input[type="checkbox"]:checked + .toggle-track {
-      background: #2dd4bf; /* Vibrant Turquoise/Teal when active */
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+      background: #10b981; /* Bright green when ON */
     }
 
     input[type="checkbox"]:checked + .toggle-track::after {
-      transform: translateX(26px);
+      transform: translateX(24px);
     }
 
     input[type="checkbox"] { display: none; }
@@ -780,6 +871,12 @@ export class CarListComponent {
   searchModel = '';
   searchYear = '';
   onlyAvailable = false;
+  minPrice: number | null = null;
+  maxPrice: number | null = null;
+  selectedFuelType = '';
+  selectedTransmission = '';
+  selectedCategory = '';
+  selectedSeats = '';
 
   years = Array.from({ length: 30 }, (_, i) => new Date().getFullYear() - i);
 
@@ -803,6 +900,12 @@ export class CarListComponent {
     this.searchModel = '';
     this.searchYear = '';
     this.onlyAvailable = false;
+    this.minPrice = null;
+    this.maxPrice = null;
+    this.selectedFuelType = '';
+    this.selectedTransmission = '';
+    this.selectedCategory = '';
+    this.selectedSeats = '';
     this.filterCars();
   }
 
@@ -830,6 +933,35 @@ export class CarListComponent {
 
     if (this.onlyAvailable) {
       filtered = filtered.filter(car => car.available);
+    }
+
+    if (this.minPrice !== null && this.minPrice > 0) {
+      filtered = filtered.filter(car => car.pricePerDay >= this.minPrice!);
+    }
+
+    if (this.maxPrice !== null && this.maxPrice > 0) {
+      filtered = filtered.filter(car => car.pricePerDay <= this.maxPrice!);
+    }
+
+    if (this.selectedFuelType) {
+      filtered = filtered.filter(car => car.fuelType === this.selectedFuelType);
+    }
+
+    if (this.selectedTransmission) {
+      filtered = filtered.filter(car => car.transmission === this.selectedTransmission);
+    }
+
+    if (this.selectedCategory) {
+      filtered = filtered.filter(car => car.category === this.selectedCategory);
+    }
+
+    if (this.selectedSeats) {
+      const seatsNum = parseInt(this.selectedSeats);
+      if (seatsNum === 7) {
+        filtered = filtered.filter(car => (car.seats || 5) >= 7);
+      } else {
+        filtered = filtered.filter(car => (car.seats || 5) === seatsNum);
+      }
     }
 
     this.displayedCars.set(filtered);

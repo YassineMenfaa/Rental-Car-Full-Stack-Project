@@ -24,7 +24,7 @@ import { useMyActiveRentalsQuery, useAvailableCarsQuery } from '../../core/queri
             <!-- Hero Simplified -->
             <section class="hero-module animate-in">
               <span class="eyebrow">NEORENT CONTROL CENTER</span>
-              <h1>Welcome, <span class="highlight">{{ authService.currentUser()?.username }}</span></h1>
+              <h1>Welcome, <span class="highlight">{{ getDisplayName() }}</span></h1>
               <p class="hero-subtitle">System status operational. Select a module to begin.</p>
               <button (click)="authService.logout()" class="btn-logout-minimal">Exit System</button>
             </section>
@@ -365,6 +365,12 @@ export class DashboardComponent {
   activeRentalsQuery = useMyActiveRentalsQuery();
   availableCarsQuery = useAvailableCarsQuery();
   private http = inject(HttpClient);
+
+  getDisplayName(): string {
+    const email = this.authService.currentUser()?.email;
+    if (!email) return 'User';
+    return email.split('@')[0];
+  }
 
   testAuth() {
     this.http.get('http://localhost:8082/api/cars/auth-debug', { responseType: 'text' })

@@ -86,7 +86,7 @@ export class AuthService {
             const payload = token.split('.')[1];
             const decoded = JSON.parse(atob(payload));
             const user: User = {
-                username: decoded.sub,
+                email: decoded.sub,
                 role: decoded.role || 'USER'
             };
             localStorage.setItem(this.USER_KEY, JSON.stringify(user));

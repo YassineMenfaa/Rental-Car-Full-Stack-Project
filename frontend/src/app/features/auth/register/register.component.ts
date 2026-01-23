@@ -12,7 +12,14 @@ import { AuthService } from '../../../core/services';
     <div class="auth-container">
       <div class="auth-card glass-panel animate-enter">
         <div class="auth-header">
-          <div class="logo-circle">🚗</div>
+          <div class="logo-circle">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="8.5" cy="7" r="4"></circle>
+              <line x1="20" y1="8" x2="20" y2="14"></line>
+              <line x1="23" y1="11" x2="17" y2="11"></line>
+            </svg>
+          </div>
           <h1>Create Account</h1>
           <p>Start your car rental journey</p>
         </div>
@@ -31,17 +38,17 @@ import { AuthService } from '../../../core/services';
           }
 
           <div class="form-group">
-            <label for="username">Username</label>
+            <label for="email">Email Address</label>
             <div class="input-wrapper">
               <input
-                type="text"
-                id="username"
-                [(ngModel)]="username"
-                name="username"
-                placeholder="Choose a username"
+                type="email"
+                id="email"
+                [(ngModel)]="email"
+                name="email"
+                placeholder="Enter your email"
                 required
+                autocomplete="email"
               />
-              <span class="field-icon"></span>
             </div>
           </div>
 
@@ -55,8 +62,8 @@ import { AuthService } from '../../../core/services';
                 name="password"
                 placeholder="Create a password"
                 required
+                autocomplete="new-password"
               />
-              <span class="field-icon"></span>
             </div>
           </div>
 
@@ -70,13 +77,13 @@ import { AuthService } from '../../../core/services';
                 name="confirmPassword"
                 placeholder="Confirm your password"
                 required
+                autocomplete="new-password"
               />
-              <span class="field-icon"></span>
             </div>
           </div>
 
           <button type="submit" class="btn btn-primary full-width" [disabled]="loading()">
-            {{ loading() ? 'Creating account...' : 'Create Account' }} <span class="btn-arrow">→</span>
+            {{ loading() ? 'Creating account...' : 'Create Account' }} <span class="btn-arrow" *ngIf="!loading()">→</span>
           </button>
         </form>
 
@@ -100,55 +107,61 @@ import { AuthService } from '../../../core/services';
     }
 
     .auth-card {
-      background: white;
-      border-radius: var(--radius-xl);
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 24px;
       padding: 3rem;
       width: 100%;
-      max-width: 440px;
-      border: 1px solid var(--border-light);
-      box-shadow: var(--shadow-xl);
-    }
-
-    .auth-header {
-      text-align: center;
-      margin-bottom: 2.5rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      max-width: 480px;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.05);
     }
 
     .logo-circle {
       width: 4rem;
       height: 4rem;
-      background: var(--primary-50);
+      background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+      color: white;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 2rem;
       margin-bottom: 1.5rem;
-      box-shadow: var(--shadow-md);
+      box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+    }
+
+    .logo-circle svg {
+      width: 2.25rem;
+      height: 2.25rem;
+      color: white;
+    }
+
+    .auth-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 2.5rem;
     }
 
     .auth-header h1 {
-      font-size: 1.75rem;
-      margin: 0 0 0.5rem;
+      font-size: 2rem;
       font-weight: 800;
       color: var(--text-main);
-      background: var(--accent-gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      margin: 0 0 0.5rem;
+      letter-spacing: -0.025em;
     }
 
     .auth-header p {
       color: var(--text-muted);
-      font-size: 0.95rem;
+      font-size: 1rem;
     }
 
     .auth-form {
       display: flex;
       flex-direction: column;
-      gap: 1.5rem;
+      gap: 1.25rem;
     }
 
     .form-group {
@@ -161,6 +174,7 @@ import { AuthService } from '../../../core/services';
       color: var(--text-main);
       font-size: 0.9rem;
       font-weight: 600;
+      margin-left: 0.25rem;
     }
 
     .input-wrapper {
@@ -168,50 +182,57 @@ import { AuthService } from '../../../core/services';
     }
 
     .form-group input {
-      padding: 0.875rem 1rem 0.875rem 2.75rem;
+      width: 100%;
+      padding: 1rem 1.25rem;
       font-size: 1rem;
-      border-radius: var(--radius-lg);
+      border-radius: 12px;
+      border: 2px solid transparent;
+      background: white;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      transition: all 0.2s ease;
     }
 
-    .field-icon {
-      position: absolute;
-      left: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 1.1rem;
-      opacity: 0.5;
-      pointer-events: none;
-    }
-
-    .form-group input:focus + .field-icon {
-      opacity: 1;
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary-500);
+      box-shadow: 0 0 0 4px var(--primary-100);
     }
 
     .btn.full-width {
       width: 100%;
       margin-top: 1rem;
-      justify-content: space-between;
+      justify-content: center;
       height: 3.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
+      border: none;
+      box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+      transition: all 0.2s;
     }
 
-    .btn-arrow {
-      font-size: 1.25rem;
-      transition: transform 0.2s;
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
     }
 
-    .btn:hover .btn-arrow {
-      transform: translateX(4px);
+    .btn:active {
+      transform: translateY(0);
     }
 
     .error-message {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      background: #fef2f2;
-      border: 1px solid #fee2e2;
-      color: #b91c1c;
-      padding: 0.75rem;
-      border-radius: var(--radius-lg);
+      gap: 0.75rem;
+      background: #fee2e2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+      padding: 0.875rem;
+      border-radius: 12px;
       font-size: 0.9rem;
       font-weight: 500;
     }
@@ -219,22 +240,22 @@ import { AuthService } from '../../../core/services';
     .success-message {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.75rem;
       background: #f0fdf4;
       border: 1px solid #dcfce7;
       color: #15803d;
-      padding: 0.75rem;
-      border-radius: var(--radius-lg);
+      padding: 0.875rem;
+      border-radius: 12px;
       font-size: 0.9rem;
       font-weight: 500;
     }
 
     .auth-footer {
       text-align: center;
-      margin-top: 2rem;
+      margin-top: 2.5rem;
       color: var(--text-muted);
       font-size: 0.95rem;
-      border-top: 1px solid var(--border-light);
+      border-top: 1px solid rgba(0,0,0,0.05);
       padding-top: 1.5rem;
     }
 
@@ -242,15 +263,17 @@ import { AuthService } from '../../../core/services';
       color: var(--primary-600);
       text-decoration: none;
       font-weight: 600;
+      transition: color 0.2s;
     }
 
     .auth-footer a:hover {
+      color: var(--primary-700);
       text-decoration: underline;
     }
   `]
 })
 export class RegisterComponent {
-  username = '';
+  email = '';
   password = '';
   confirmPassword = '';
   loading = signal(false);
@@ -266,7 +289,7 @@ export class RegisterComponent {
     this.error.set(null);
     this.success.set(null);
 
-    if (!this.username || !this.password || !this.confirmPassword) {
+    if (!this.email || !this.password || !this.confirmPassword) {
       this.error.set('Please fill in all fields');
       return;
     }
@@ -283,7 +306,7 @@ export class RegisterComponent {
 
     this.loading.set(true);
 
-    this.authService.register({ username: this.username, password: this.password })
+    this.authService.register({ email: this.email, password: this.password })
       .subscribe({
         next: () => {
           this.success.set('Account created successfully! Redirecting to login...');

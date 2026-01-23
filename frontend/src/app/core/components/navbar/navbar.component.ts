@@ -1,14 +1,15 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal, AfterViewInit, OnDestroy, Renderer2, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { AuthService } from '../../services';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
   imports: [CommonModule, RouterLink, RouterLinkActive],
   template: `
-    <nav class="navbar glass-header">
+    <nav class="navbar glass-header" [class.scrolled]="isScrolled()" [class.on-home]="isOnHomePage()">
       <div class="container nav-content">
         <a routerLink="/" class="logo">
           NeoRent
@@ -33,14 +34,14 @@ import { AuthService } from '../../services';
         <div class="nav-auth">
           @if (authService.isAuthenticated()) {
             <div class="user-profile">
-              <span class="avatar">{{ authService.currentUser()?.username?.charAt(0)?.toUpperCase() }}</span>
+              <span class="avatar">{{ authService.currentUser()?.email?.charAt(0)?.toUpperCase() }}</span>
               <button (click)="authService.logout()" class="btn-logout">
                 Logout
               </button>
             </div>
           } @else {
             <a routerLink="/login" class="btn btn-secondary btn-sm">Sign In</a>
-            <a routerLink="/register" class="btn btn-primary btn-sm">Get Started</a>
+            <a routerLink="/register" class="btn btn-dark btn-sm">Get Started</a>
           }
         </div>
       </div>
@@ -48,11 +49,33 @@ import { AuthService } from '../../services';
   `,
   styles: [`
     .navbar {
-      position: sticky;
+      position: fixed;
       top: 0;
       width: 100%;
       z-index: 1000;
       transition: all 0.3s ease;
+    }
+
+    /* When on home page and NOT scrolled - transparent navbar with white text */
+    /* When on home page and NOT scrolled - Enforce White opaque background */
+    .navbar.on-home:not(.scrolled) {
+      background: white !important;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.08) !important;
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05) !important;
+    }
+
+    /* When scrolled - white background with dark text */
+    .navbar.scrolled,
+    .navbar:not(.on-home) {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+    }
+
+    .navbar.scrolled .logo,
+    .navbar:not(.on-home) .logo {
+      color: #0f172a;
     }
 
     .nav-content {
@@ -75,8 +98,8 @@ import { AuthService } from '../../services';
     }
 
     .logo:hover {
-      color: #2dd4bf;
-      text-shadow: 0 0 15px rgba(45, 212, 191, 0.4);
+      color: #f59e0b;
+      text-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
     }
 
     .logo-icon {
@@ -93,6 +116,7 @@ import { AuthService } from '../../services';
       padding: 0.25rem;
       border-radius: var(--radius-full);
       border: 1px solid rgba(15, 23, 42, 0.08);
+      transition: all 0.3s ease;
     }
 
     .nav-item {
@@ -117,8 +141,8 @@ import { AuthService } from '../../services';
 
     .nav-item.active {
       background: rgba(255, 255, 255, 0.1);
-      color: #2dd4bf;
-      box-shadow: 0 4px 12px rgba(45, 212, 191, 0.15);
+      color: #f59e0b;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
       font-weight: 700;
     }
 
@@ -133,6 +157,7 @@ import { AuthService } from '../../services';
       padding: 0.5rem 1rem;
       font-size: 0.85rem;
       border-radius: var(--radius-full);
+      transition: all 0.3s ease;
     }
 
     .user-profile {
@@ -149,7 +174,7 @@ import { AuthService } from '../../services';
     .avatar {
       width: 2.25rem;
       height: 2.25rem;
-      background: linear-gradient(135deg, #2dd4bf 0%, #008080 100%);
+      background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
       color: white;
       border-radius: 50%;
       display: flex;
@@ -157,7 +182,7 @@ import { AuthService } from '../../services';
       justify-content: center;
       font-weight: 800;
       font-size: 0.9rem;
-      box-shadow: 0 4px 12px rgba(45, 212, 191, 0.3);
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
     }
 
     .btn-logout {
@@ -187,6 +212,63 @@ import { AuthService } from '../../services';
     }
   `]
 })
-export class NavbarComponent {
+export class NavbarComponent implements AfterViewInit, OnDestroy {
   authService = inject(AuthService);
+  private router = inject(Router);
+  private renderer = inject(Renderer2);
+  private ngZone = inject(NgZone);
+
+  isScrolled = signal(false);
+  isOnHomePage = signal(false);
+
+  private scrollUnlisten: (() => void) | null = null;
+
+  constructor() {
+    // Check initial route
+    this.checkRoute(this.router.url);
+
+    // Listen to route changes
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: NavigationEnd) => {
+      this.checkRoute(event.urlAfterRedirects);
+    });
+  }
+
+  ngAfterViewInit() {
+    // Listen to scroll events on body (where scrolling actually happens)
+    this.ngZone.runOutsideAngular(() => {
+      this.scrollUnlisten = this.renderer.listen(document.body, 'scroll', () => {
+        this.updateScrollState();
+      });
+
+      // Also listen on window and document for compatibility
+      window.addEventListener('scroll', () => this.updateScrollState(), { passive: true });
+      document.addEventListener('scroll', () => this.updateScrollState(), { passive: true });
+    });
+
+    // Check initial scroll position
+    this.updateScrollState();
+  }
+
+  ngOnDestroy() {
+    if (this.scrollUnlisten) {
+      this.scrollUnlisten();
+    }
+  }
+
+  private checkRoute(url: string) {
+    this.isOnHomePage.set(url === '/' || url === '/home');
+  }
+
+  private updateScrollState() {
+    // Check multiple scroll sources for compatibility
+    const scrollY = window.scrollY || window.pageYOffset ||
+      document.documentElement.scrollTop ||
+      document.body.scrollTop || 0;
+
+    this.ngZone.run(() => {
+      this.isScrolled.set(scrollY > 50);
+    });
+  }
 }

@@ -116,6 +116,53 @@ import { lastValueFrom } from 'rxjs';
                 <textarea [(ngModel)]="formData.description" name="description" rows="3"></textarea>
               </div>
 
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Fuel Type</label>
+                  <select [(ngModel)]="formData.fuelType" name="fuelType">
+                    <option value="">Select Fuel Type</option>
+                    <option value="Gasoline">Gasoline</option>
+                    <option value="Electric">Electric</option>
+                    <option value="Diesel">Diesel</option>
+                    <option value="Hybrid">Hybrid</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Transmission</label>
+                  <select [(ngModel)]="formData.transmission" name="transmission">
+                    <option value="">Select Transmission</option>
+                    <option value="Automatic">Automatic</option>
+                    <option value="Manual">Manual</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Category</label>
+                  <select [(ngModel)]="formData.category" name="category">
+                    <option value="">Select Category</option>
+                    <option value="Economy">Economy</option>
+                    <option value="Compact">Compact</option>
+                    <option value="Midsize">Midsize</option>
+                    <option value="SUV">SUV</option>
+                    <option value="Luxury">Luxury</option>
+                    <option value="Sports">Sports</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Seats</label>
+                  <select [(ngModel)]="formData.seats" name="seats">
+                    <option value="">Select Seats</option>
+                    <option [ngValue]="2">2 Seats</option>
+                    <option [ngValue]="4">4 Seats</option>
+                    <option [ngValue]="5">5 Seats</option>
+                    <option [ngValue]="7">7 Seats</option>
+                    <option [ngValue]="8">8+ Seats</option>
+                  </select>
+                </div>
+              </div>
+
               <div class="modal-actions">
                 <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
                 <button type="submit" class="btn-save" [disabled]="saving()">
@@ -322,10 +369,22 @@ import { lastValueFrom } from 'rxjs';
     }
     
     .form-group input:focus,
-    .form-group textarea:focus {
+    .form-group textarea:focus,
+    .form-group select:focus {
       outline: none;
       border-color: #2563eb;
       box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+
+    .form-group select {
+      width: 100%;
+      background: white;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 0.75rem;
+      color: #0f172a;
+      font-size: 1rem;
+      cursor: pointer;
     }
 
     .modal-actions {
@@ -404,7 +463,11 @@ export class CarManagementComponent {
     pricePerDay: 0,
     owner: '',
     imageUrl: '',
-    description: ''
+    description: '',
+    fuelType: '',
+    transmission: '',
+    category: '',
+    seats: null as number | null
   };
 
   openModal() {
@@ -422,7 +485,11 @@ export class CarManagementComponent {
       pricePerDay: car.pricePerDay,
       owner: car.owner || '',
       imageUrl: car.imageUrl || '',
-      description: car.description || ''
+      description: car.description || '',
+      fuelType: car.fuelType || '',
+      transmission: car.transmission || '',
+      category: car.category || '',
+      seats: car.seats || null
     };
     this.showModal.set(true);
   }
@@ -441,7 +508,11 @@ export class CarManagementComponent {
       pricePerDay: 0,
       owner: '',
       imageUrl: '',
-      description: ''
+      description: '',
+      fuelType: '',
+      transmission: '',
+      category: '',
+      seats: null
     };
   }
 
@@ -453,9 +524,9 @@ export class CarManagementComponent {
     try {
       const editing = this.editingCar();
       if (editing) {
-        await lastValueFrom(this.carService.updateCar(editing.id, this.formData));
+        await lastValueFrom(this.carService.updateCar(editing.id, this.formData as any));
       } else {
-        await lastValueFrom(this.carService.createCar(this.formData));
+        await lastValueFrom(this.carService.createCar(this.formData as any));
       }
       this.queryClient.invalidateQueries({ queryKey: queryKeys.cars.all });
       this.closeModal();

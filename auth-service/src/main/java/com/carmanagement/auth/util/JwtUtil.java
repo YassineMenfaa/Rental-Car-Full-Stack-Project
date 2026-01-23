@@ -18,9 +18,9 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
     }
 
-    public static String generateToken(String username, String role) {
+    public static String generateToken(String email, String role) {
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(email)
                 .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
@@ -36,7 +36,7 @@ public class JwtUtil {
                 .getBody();
     }
 
-    public static String extractUsername(String token) {
+    public static String extractEmail(String token) {
         return extractClaims(token).getSubject();
     }
 
@@ -48,7 +48,7 @@ public class JwtUtil {
         return extractClaims(token).getExpiration().before(new Date());
     }
 
-    public static boolean validateToken(String token, String username) {
-        return (extractUsername(token).equals(username) && !isTokenExpired(token));
+    public static boolean validateToken(String token, String email) {
+        return (extractEmail(token).equals(email) && !isTokenExpired(token));
     }
 }

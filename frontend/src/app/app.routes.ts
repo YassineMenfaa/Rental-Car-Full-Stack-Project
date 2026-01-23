@@ -4,8 +4,12 @@ import { authGuard, adminGuard, guestGuard } from './core/guards/auth.guard';
 export const routes: Routes = [
     {
         path: '',
-        redirectTo: 'cars',
+        redirectTo: 'home',
         pathMatch: 'full'
+    },
+    {
+        path: 'home',
+        loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
     },
     {
         path: 'login',

@@ -63,6 +63,13 @@ import { QueryClient } from '@tanstack/angular-query-experimental';
               </div>
             }
 
+            @if (rentalError()) {
+              <div class="error-message">{{ rentalError() }}</div>
+            }
+            @if (rentalSuccess()) {
+              <div class="success-message">{{ rentalSuccess() }}</div>
+            }
+
             <div class="stats">
               <div class="stat">
                 <span class="label">Owner</span>
@@ -84,12 +91,7 @@ import { QueryClient } from '@tanstack/angular-query-experimental';
                     <a routerLink="/login" class="btn-primary">Login to Rent</a>
                   </div>
                 } @else {
-                  @if (rentalError()) {
-                    <div class="error-message">{{ rentalError() }}</div>
-                  }
-                  @if (rentalSuccess()) {
-                    <div class="success-message">{{ rentalSuccess() }}</div>
-                  }
+
 
                   <div class="date-inputs">
                     <div class="form-group">
@@ -131,11 +133,13 @@ import { QueryClient } from '@tanstack/angular-query-experimental';
                 }
               </div>
             } @else {
-              <div class="unavailable-notice">
-                <p>This car is currently rented and not available for booking.</p>
-                <p>Check back later or browse other available cars.</p>
-                <a routerLink="/cars" class="btn-secondary">Browse Available Cars</a>
-              </div>
+              @if (!rentalSuccess()) {
+                <div class="unavailable-notice">
+                  <p>This car is currently rented and not available for booking.</p>
+                  <p>Check back later or browse other available cars.</p>
+                  <a routerLink="/cars" class="btn-secondary">Browse Available Cars</a>
+                </div>
+              }
             }
           </div>
         </main>
