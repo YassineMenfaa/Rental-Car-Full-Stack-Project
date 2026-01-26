@@ -54,7 +54,7 @@ The easiest way to run the entire backend stack is using Docker Compose.
 
 1.  **Clone the repository:**
     ```bash
-    git clone <repository-url>
+    git clone https://github.com/YassineMenfaa/Rental-Car-Full-Stack-Project.git
     cd Car-Management-System
     ```
 
