@@ -1,9 +1,17 @@
 package com.carmanagement.car.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "cars")
+@Table(name = "car_inventory")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Car {
 
     @Id
@@ -11,52 +19,28 @@ public class Car {
     private Long id;
 
     @Column(nullable = false)
-    private String make;
+    private String brand;
 
     @Column(nullable = false)
     private String model;
 
+    @Column(name = "production_year", nullable = false)
     private Integer year;
 
-    private Double price;
+    private String owner;
 
-    public Long getId() {
-        return id;
-    }
+    @Column(nullable = false)
+    private Double pricePerDay;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean available = true;
 
-    public String getMake() {
-        return make;
-    }
+    @Builder.Default
+    private Integer rentalCount = 0;
 
-    public void setMake(String make) {
-        this.make = make;
-    }
+    private String imageUrl;
 
-    public String getModel() {
-        return model;
-    }
-
-    public void setModel(String model) {
-        this.model = model;
-    }
-
-    public Integer getYear() {
-        return year;
-    }
-
-    public void setYear(Integer year) {
-        this.year = year;
-    }
-
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
-    }
+    @Column(length = 1000)
+    private String description;
 }

@@ -7,7 +7,6 @@ import com.carmanagement.auth.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
 import java.util.List;
 
 @RestController
@@ -19,15 +18,16 @@ public class AuthController {
     public AuthController(UserService userService) {
         this.userService = userService;
     }
+
     @PostMapping("/register")
     public User register(@RequestBody RegisterRequest req) {
-        return userService.register(req.getUsername(), req.getPassword());
+        return userService.register(req.getEmail(), req.getPassword());
     }
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest req) {
         try {
-            String token = userService.login(req.getUsername(), req.getPassword());
+            String token = userService.login(req.getEmail(), req.getPassword());
             return ResponseEntity.ok(token);
         } catch (RuntimeException e) {
             return ResponseEntity.status(401).body(e.getMessage()); // "User not found" ou "Invalid credentials"
