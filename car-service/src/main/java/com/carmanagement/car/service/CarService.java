@@ -45,6 +45,10 @@ public class CarService {
                     existing.setPricePerDay(carDetails.getPricePerDay());
                     existing.setImageUrl(carDetails.getImageUrl());
                     existing.setDescription(carDetails.getDescription());
+                    existing.setFuelType(carDetails.getFuelType());
+                    existing.setTransmission(carDetails.getTransmission());
+                    existing.setCategory(carDetails.getCategory());
+                    existing.setSeats(carDetails.getSeats());
                     return carRepository.save(existing);
                 });
     }

@@ -48,21 +48,30 @@ Each service has its own dedicated PostgreSQL database instance to ensure loose 
 *   [Node.js](https://nodejs.org/) (v18+ recommended) and `npm`.
 *   [Java 17 SDK](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html) (if running services locally without Docker).
 
+
 ### Running the Application (Docker)
 
 The easiest way to run the entire backend stack is using Docker Compose.
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/YassineMenfaa/Rental-Car-Full-Stack-Project.git
-    cd Car-Management-System
-    ```
+Option A: Build from Source (Recommended for Developers)
+Download and RUN the project:
+git clone https://github.com/YassineMenfaa/Rental-Car-Full-Stack-Project.git
+cd Rental-Car-Full-Stack-Project-main
 
-2.  **Start the services:**
-    ```bash
-    docker-compose up --build
-    ```
-    This command will build the images for API Gateway, Eureka, and all services, and start them along with the PostgreSQL databases.
+docker-compose up --build
+
+Option B: Run from Docker Hub (Fastest for Users)
+If your wants to run the app without building the code:
+
+Download the project:
+
+git clone https://github.com/YassineMenfaa/Rental-Car-Full-Stack-Project.git
+cd Rental-Car-Full-Stack-Project-main
+
+Start using pre-built images:
+
+docker-compose -f docker-compose.prod.yml up -d
+
 
 3.  **Access the application:**
     *   **Eureka Dashboard:** [http://localhost:8761](http://localhost:8761)
@@ -91,6 +100,7 @@ The easiest way to run the entire backend stack is using Docker Compose.
 
 Once the services are running, you can access the Swagger UI for specific services (if enabled) generally at:
 *   `http://localhost:<SERVICE_PORT>/swagger-ui.html`
+
 
 ## 🤝 Contributing
 

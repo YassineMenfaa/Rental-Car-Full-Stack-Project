@@ -1,130 +1,158 @@
 services:
-  # --- Databases ---
+  # Base de données pour auth-service
   postgres-auth:
     image: postgres:15
     container_name: postgres-auth
     environment:
       POSTGRES_DB: auth_db
-      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: root
+      POSTGRES_USER: postgres
     ports:
       - "5432:5432"
     volumes:
-      - auth_data:/var/lib/postgresql/data
+      - postgres_auth_data:/var/lib/postgresql/data
+    networks:
+      - car-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
+      timeout: 5s
       retries: 5
 
+  # Base de données pour car-service
   postgres-car:
     image: postgres:15
     container_name: postgres-car
     environment:
       POSTGRES_DB: car_db
-      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: root
+      POSTGRES_USER: postgres
     ports:
       - "5433:5432"
     volumes:
-      - car_data:/var/lib/postgresql/data
+      - postgres_car_data:/var/lib/postgresql/data
+    networks:
+      - car-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
+      timeout: 5s
       retries: 5
 
+  # Base de données pour rental-service
   postgres-rental:
     image: postgres:15
     container_name: postgres-rental
     environment:
       POSTGRES_DB: rental_db
-      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: root
+      POSTGRES_USER: postgres
     ports:
       - "5434:5432"
     volumes:
-      - rental_data:/var/lib/postgresql/data
+      - postgres_rental_data:/var/lib/postgresql/data
+    networks:
+      - car-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
+      timeout: 5s
       retries: 5
 
-  # --- Discovery & Gateway ---
+  # Eureka Server
   eureka-server:
     build: ./eureka-server
     container_name: eureka-server
-    restart: always
     ports:
       - "8761:8761"
-
-  api-gateway:
-    build: ./api-gateway
-    container_name: api-gateway
-    restart: always
-    ports:
-      - "8080:8080"
-    depends_on:
-      - eureka-server
-    environment:
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
-
-  # --- Microservices ---
-  auth-service:
-    build: ./auth-service
-    container_name: auth-service
-    restart: on-failure
-    ports:
-      - "8081:8081"
+    networks:
+      - car-network
     depends_on:
       postgres-auth:
         condition: service_healthy
-      eureka-server:
-        condition: service_started
     environment:
+      SPRING_PROFILES_ACTIVE: docker
+
+  # API Gateway
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    networks:
+      - car-network
+    depends_on:
+      - eureka-server
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+
+  # Auth Service
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    ports:
+      - "8081:8081"
+    networks:
+      - car-network
+    depends_on:
+      - eureka-server
+      - postgres-auth
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-auth:5432/auth_db
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
 
+  # Car Service
   car-service:
     build: ./car-service
     container_name: car-service
-    restart: on-failure
     ports:
       - "8082:8082"
+    networks:
+      - car-network
     depends_on:
-      postgres-car:
-        condition: service_healthy
-      eureka-server:
-        condition: service_started
+      - eureka-server
+      - postgres-car
     environment:
+      SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-car:5432/car_db
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
 
+  # Rental Service
   rental-service:
     build: ./rental-service
     container_name: rental-service
-    restart: on-failure
     ports:
       - "8083:8083"
+    networks:
+      - car-network
     depends_on:
-      postgres-rental:
-        condition: service_healthy
-      eureka-server:
-        condition: service_started
+      - eureka-server
+      - postgres-rental
+      - car-service
     environment:
+      SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-rental:5432/rental_db
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
-      # Important: Communication entre services
       CAR_SERVICE_URL: http://car-service:8082
 
-  # --- Frontend ---
+  # Frontend Application
   frontend:
     build: ./frontend
     container_name: frontend
     ports:
       - "4200:80"
+    networks:
+      - car-network
     depends_on:
       - api-gateway
 
+networks:
+  car-network:
+    driver: bridge
+
 volumes:
-  auth_data:
-  car_data:
-  rental_data:
+  postgres_auth_data:
+  postgres_car_data:
+  postgres_rental_data:

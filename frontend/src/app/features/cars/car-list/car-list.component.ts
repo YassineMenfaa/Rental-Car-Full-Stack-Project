@@ -226,13 +226,13 @@ import { AuthService } from '../../../core/services';
 
                     <div class="specs-grid">
                       <div class="spec-item">
-                        <span>Auto</span>
+                        <span>{{ car.transmission || 'Auto' }}</span>
                       </div>
                       <div class="spec-item">
-                        <span>5 Seats</span>
+                        <span>{{ car.seats || 5 }} Seats</span>
                       </div>
                       <div class="spec-item">
-                        <span>Hybrid</span>
+                        <span>{{ car.fuelType || 'Hybrid' }}</span>
                       </div>
                     </div>
 
