@@ -4,7 +4,7 @@ services:
     image: postgres:15
     container_name: postgres-auth
     environment:
-      POSTGRES_DB: auth_db
+      POSTGRES_DB: postgres-auth
       POSTGRES_PASSWORD: root
       POSTGRES_USER: postgres
     ports:
@@ -24,7 +24,7 @@ services:
     image: postgres:15
     container_name: postgres-car
     environment:
-      POSTGRES_DB: car_db
+      POSTGRES_DB: postgres-car
       POSTGRES_PASSWORD: root
       POSTGRES_USER: postgres
     ports:
@@ -44,7 +44,7 @@ services:
     image: postgres:15
     container_name: postgres-rental
     environment:
-      POSTGRES_DB: rental_db
+      POSTGRES_DB: postgres-rental
       POSTGRES_PASSWORD: root
       POSTGRES_USER: postgres
     ports:
@@ -100,7 +100,7 @@ services:
       - postgres-auth
     environment:
       SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-auth:5432/auth_db
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-auth:5432/postgres-auth
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
 
   # Car Service
@@ -116,7 +116,7 @@ services:
       - postgres-car
     environment:
       SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-car:5432/car_db
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-car:5432/postgres-car
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
 
   # Rental Service
@@ -133,7 +133,7 @@ services:
       - car-service
     environment:
       SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-rental:5432/rental_db
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-rental:5432/postgres-rental
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
       CAR_SERVICE_URL: http://car-service:8082
 
