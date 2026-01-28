@@ -1,0 +1,50 @@
+# Chatbot Service Configuration
+
+server:
+  port: 8084
+
+spring:
+  application:
+    name: chatbot-service
+  
+  # Spring AI + Ollama Configuration (Optimized for Performance)
+  ai:
+    ollama:
+      base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+      chat:
+        model: ${OLLAMA_MODEL:llama3.2}
+        options:
+          # Lower temperature = more focused, deterministic responses
+          temperature: 0.5
+          # Reduced token limit = faster responses
+          num-predict: 300
+          # Smaller context window = less memory usage
+          num-ctx: 2048
+
+# Car Service Configuration
+car-service:
+  url: ${CAR_SERVICE_URL:http://localhost:8082}
+
+# Eureka Client Configuration
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
+  instance:
+    prefer-ip-address: true
+
+# Logging Configuration
+logging:
+  level:
+    com.carmanagement.chatbot: DEBUG
+    org.springframework.ai: INFO
+
+# Actuator Endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always

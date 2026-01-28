@@ -8,6 +8,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="api-gateway" />
+        <module name="chatbot-service" />
         <module name="eureka-server" />
       </profile>
       <profile name="Annotation profile for rental-service" enabled="true">
@@ -28,6 +29,7 @@
       <module name="api-gateway" options="-parameters" />
       <module name="auth-service" options="-parameters" />
       <module name="car-service" options="-parameters" />
+      <module name="chatbot-service" options="-parameters" />
       <module name="eureka-server" options="-parameters" />
       <module name="rental-service" options="-parameters" />
     </option>

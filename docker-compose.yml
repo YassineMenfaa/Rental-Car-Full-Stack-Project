@@ -137,6 +137,44 @@ services:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
       CAR_SERVICE_URL: http://car-service:8082
 
+  # ==========================================
+  # OLLAMA - LOCAL AI MODEL SERVER
+  # ==========================================
+  # Ollama runs the Llama 3.2 model locally.
+  # The chatbot-service connects to this container.
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      # Persist downloaded models between restarts
+      - ollama_data:/root/.ollama
+    networks:
+      - car-network
+    # Pull the model on first startup
+    entrypoint: [ "/bin/sh", "-c", "ollama serve & sleep 5 && ollama pull llama3.2 && wait" ]
+
+  # ==========================================
+  # CHATBOT SERVICE - AI-POWERED CHAT
+  # ==========================================
+  chatbot-service:
+    build: ./chatbot-service
+    container_name: chatbot-service
+    ports:
+      - "8084:8084"
+    networks:
+      - car-network
+    depends_on:
+      - eureka-server
+      - ollama
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      # Connect to Ollama container
+      OLLAMA_BASE_URL: http://ollama:11434
+      OLLAMA_MODEL: llama3.2
+
   # Frontend Application
   frontend:
     build: ./frontend
@@ -156,3 +194,4 @@ volumes:
   postgres_auth_data:
   postgres_car_data:
   postgres_rental_data:
+  ollama_data:

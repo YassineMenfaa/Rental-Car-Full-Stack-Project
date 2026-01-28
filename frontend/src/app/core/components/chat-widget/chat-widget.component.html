@@ -1,0 +1,105 @@
+<!-- Chat Toggle Button - Always visible -->
+<button 
+    class="chat-toggle-btn" 
+    (click)="toggleChat()" 
+    [class.active]="isChatOpen"
+    aria-label="Toggle chat">
+    <svg *ngIf="!isChatOpen" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+    </svg>
+    <svg *ngIf="isChatOpen" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>
+</button>
+
+<!-- Chat Window -->
+<div class="chat-window" [class.open]="isChatOpen">
+    <!-- Header -->
+    <div class="chat-header">
+        <div class="header-info">
+            <div class="bot-avatar">🚗</div>
+            <div class="bot-details">
+                <span class="bot-name">CarBot</span>
+                <span class="bot-status">AI Car Expert</span>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="action-btn" (click)="startNewChat()" title="New conversation">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="1 4 1 10 7 10"></polyline>
+                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                </svg>
+            </button>
+            <button class="action-btn close-btn" (click)="closeChat()" title="Close chat">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Messages Container -->
+    <div class="chat-messages" #messagesContainer>
+        <!-- Welcome message if no messages -->
+        <div class="welcome-message" *ngIf="messages.length === 0">
+            <div class="welcome-icon">🚗</div>
+            <h3>Welcome to CarBot!</h3>
+            <p>I'm your AI car expert. Ask me anything about:</p>
+            <ul>
+                <li>🚙 Car recommendations</li>
+                <li>⛽ Fuel efficiency</li>
+                <li>🔍 Model comparisons</li>
+                <li>💡 Rental tips</li>
+            </ul>
+        </div>
+
+        <!-- Message bubbles -->
+        <div 
+            *ngFor="let message of messages" 
+            class="message-bubble"
+            [class.user-message]="message.isUser"
+            [class.bot-message]="!message.isUser">
+            <div class="message-content">
+                {{ message.content }}
+            </div>
+            <div class="message-time">
+                {{ message.timestamp | date:'shortTime' }}
+            </div>
+        </div>
+
+        <!-- Loading indicator -->
+        <div class="loading-indicator" *ngIf="isLoading">
+            <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <span class="typing-text">CarBot is typing...</span>
+        </div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="chat-input-area">
+        <input 
+            #messageInput
+            type="text"
+            class="chat-input"
+            [(ngModel)]="newMessage"
+            (keypress)="onKeyPress($event)"
+            placeholder="Ask about cars..."
+            [disabled]="isLoading"
+        />
+        <button 
+            class="send-btn" 
+            (click)="sendMessage()" 
+            [disabled]="!newMessage.trim() || isLoading"
+            title="Send message">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+        </button>
+    </div>
+</div>

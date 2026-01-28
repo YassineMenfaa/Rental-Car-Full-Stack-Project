@@ -1,0 +1,18 @@
+# ==========================================
+# DOCKER PROFILE CONFIGURATION
+# 
+# When running in Docker, Ollama runs as a 
+# separate container, so we need to use
+# the container hostname instead of localhost
+# ==========================================
+
+spring:
+  ai:
+    ollama:
+      # In Docker, we connect to the Ollama container by its service name
+      base-url: http://ollama:11434
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/

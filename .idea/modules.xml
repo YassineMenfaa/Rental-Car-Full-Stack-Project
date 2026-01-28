@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/api-gateway/chatbot-service/chatbot-service.iml" filepath="$PROJECT_DIR$/api-gateway/chatbot-service/chatbot-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/eureka-server/src/main/main.iml" filepath="$PROJECT_DIR$/eureka-server/src/main/main.iml" />
       <module fileurl="file://$PROJECT_DIR$/eureka-server/src/test/test.iml" filepath="$PROJECT_DIR$/eureka-server/src/test/test.iml" />
     </modules>
