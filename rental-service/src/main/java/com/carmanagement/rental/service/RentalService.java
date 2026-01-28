@@ -27,14 +27,17 @@ public class RentalService {
 
     @Transactional
     public Rental createRental(Long userId, String username, RentalDTO.CreateRequest request) {
-        // Check if car exists and is available
-        CarServiceClient.CarResponse car = carServiceClient.getCarById(request.getCarId());
-        if (car == null) {
-            throw new IllegalArgumentException("Car not found with ID: " + request.getCarId());
+        CarServiceClient.CarResponse car;
+        try {
+            // N7awlo njibo tomobile
+            car = carServiceClient.getCarById(request.getCarId());
+        } catch (Exception e) {
+            // Ila Car-Service tafi ola mal9ahaX
+            throw new IllegalArgumentException("Impossible de récupérer la voiture. Vérifiez l'ID ou le Car-Service.");
         }
-        if (!car.getAvailable()) {
-            throw new IllegalStateException("Car is not available for rental");
-        }
+
+        // Reste du code...
+
 
         // Check for conflicting rentals
         List<Rental> conflicts = rentalRepository.findConflictingRentals(

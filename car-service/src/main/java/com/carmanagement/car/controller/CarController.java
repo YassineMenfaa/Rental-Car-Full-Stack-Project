@@ -15,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/cars")
+@CrossOrigin(origins = "http://localhost:4200")
 @RequiredArgsConstructor
 @Tag(name = "Cars", description = "Car management endpoints")
 public class CarController {

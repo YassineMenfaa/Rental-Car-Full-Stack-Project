@@ -44,8 +44,8 @@ public class Car {
     @Column(length = 1000)
     private String description;
 
-    private String fuelType; // e.g., "Gasoline", "Electric", "Diesel", "Hybrid"
-    private String transmission; // e.g., "Automatic", "Manual"
-    private String category; // e.g., "Economy", "Compact", "Midsize", "SUV", "Luxury", "Sports"
+    private String fuelType;
+    private String transmission;
+    private String category;
     private Integer seats;
 }

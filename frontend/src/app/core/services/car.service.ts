@@ -44,19 +44,19 @@ export class CarService {
 
     createCar(car: Partial<Car>): Observable<Car> {
         return this.http.post<Car>(this.apiUrl, car, {
-            headers: this.authService.getAuthHeaders()
+           
         });
     }
 
     updateCar(id: number, car: Partial<Car>): Observable<Car> {
         return this.http.put<Car>(`${this.apiUrl}/${id}`, car, {
-            headers: this.authService.getAuthHeaders()
+        
         });
     }
 
     deleteCar(id: number): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}/${id}`, {
-            headers: this.authService.getAuthHeaders()
+        
         });
     }
 }
